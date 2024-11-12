@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: springboot3
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_URL:localhost:3306}/${DB_NAME:springboot3}?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=${DB_SSL:false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    hikari:
+      # ????????
+      maximum-pool-size: 20
+      # ??????????
+      minimum-idle: 5
+      # ????????
+      idle-timeout: 300000
+      # ??????
+      connection-timeout: 5000
+      # ????????
+      connection-test-query: select 1
+  # ??
+  cache:
+    type: CAFFEINE
+    caffeine:
+      spec: maximumSize=500,initialCapacity=100,expireAfterAccess=600s
+
+# MyBatis??
+mybatis:
+  # ???????
+  typeAliasesPackage: org.example.springboot3.entity
+  # ??mapper?????????mapper.xml????
+  mapperLocations: classpath*:mapper/*Mapper.xml
+  configuration:
+    cache-enabled: false
+
+# mybatis-plus ??
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: del # ????????????(since 3.3.0,????????????2)
+      logic-delete-value: 0 # ??????(??? 1)
+      logic-not-delete-value: 1 # ??????(??? 0)
+
+# Actuator ??
+management:
+  endpoints:
+    web:
+      exposure:
+        # ?????
+        include: '*'
+  endpoint:
+    health:
+      # ????????
+      show-details: always
+    shutdown:
+      # ?????? SpringBoot
+      enabled: false
+  # Micrometer ??
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# SpringDoc ??
+springdoc:
+  api-docs:
+    enabled: ${DOC_ENABLE:true}
+    path: "/api-docs"
+  swagger-ui:
+    enabled: ${DOC_UI_ENABLE:true}
+    path: "/swagger-ui.html"
+  # ??????
+  packagesToScan: org.example.springboot3.controller
+  show-actuator: false
+  cache:
+    disabled: false
+  pre-loading-enabled: true
